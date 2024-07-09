@@ -1,15 +1,15 @@
-import React from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, ScrollView,Button } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { StyleSheet, View, Text, Image, TouchableOpacity, ScrollView,Button,Animated } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import NotificationButton from './NotificationButton';
+
 import LanguageButton from './LanguageButton';
 
 const userData = {
   name: 'John Doe',
   age: 30,
   gender: 'Male',
-  location: 'New York, NY',
+  location: 'Jaipur',
   contact: '+1234567890',
   emergencyContact: {
     name: 'Jane Doe',
@@ -20,16 +20,44 @@ const userData = {
 
 const IPhone1314 = () => {
     const navigation = useNavigation();
+     const [showNotifications, setShowNotifications] = useState(false);
+      const fadeAnim = useRef(new Animated.Value(0)).current;
+
+       const toggleNotifications = () => {
+          setShowNotifications(!showNotifications);
+          Animated.timing(fadeAnim, {
+            toValue: showNotifications ? 0 : 1,
+            duration: 500,
+            useNativeDriver: true,
+          }).start();
+      };
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
       <View style={styles.container}>
+       <View style={styles.header}>
+              <TouchableOpacity onPress={toggleNotifications} style={styles.iconButton}>
+                <Image
+                  source={require('./bell.jpg')} // Replace with your bell icon image path
+                  style={styles.bellIcon}
+                />
+              </TouchableOpacity>
+            </View>
+            {showNotifications && (
+                        <Animated.View style={[styles.notificationsPanel, { opacity: fadeAnim }]}>
+                          <ScrollView>
+                            <Text style={styles.notificationText}>No new notifications</Text>
+                            {/* Display notifications here */}
+                          </ScrollView>
+                        </Animated.View>
+                      )}
+
         <View style={styles.iphone13143}>
            <TouchableOpacity
-                  style={styles.sosButton}
-                  onPress={() => navigation.navigate('SOS')}
-                >
-                  <Text style={styles.sosButtonText}>SOS</Text>
-                </TouchableOpacity>
+                             style={styles.sosButton}
+                             onPress={() => navigation.navigate('SOS', {location: userData.location})}
+                           >
+                             <Text style={styles.sosButtonText}>SOS</Text>
+                           </TouchableOpacity>
           <Image
             style={[styles.user1Icon, styles.iconLayout]}
             resizeMode="cover"
@@ -91,7 +119,39 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    padding: 20,
+    backgroundColor: '#ffb7b7',
   },
+  header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 10,
+    },
+    iconButton: {
+      padding: 10,
+
+    },
+    bellIcon: {
+      width: 24,
+      height: 24,
+    },
+     notificationsPanel: {
+          backgroundColor: '#fff',
+          padding: 15,
+          borderRadius: 10,
+          marginBottom: 20,
+          elevation: 3,
+          shadowColor: '#000',
+          shadowOpacity: 0.1,
+          shadowOffset: { width: 0, height: 2 },
+          shadowRadius: 5,
+
+        },
+        notificationText: {
+          fontSize: 16,
+          color: '#333',
+        },
   textTypo1: {
     textAlign: 'center',
     color: '#5a0000',
